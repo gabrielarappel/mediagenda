@@ -23,8 +23,8 @@ model Medico {
 
 model Consulta {
   id        Int      @id @default(autoincrement())
+  medicoId  Int
   paciente  String
   dataHora  DateTime
-  medicoId  Int
   medico    Medico   @relation(fields: [medicoId], references: [id])
 }
