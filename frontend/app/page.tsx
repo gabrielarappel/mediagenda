@@ -16,19 +16,36 @@ export default function Home() {
   const [crm, setCrm] = useState('');
   const [especialidade, setEspecialidade] = useState('');
   const [mostrarAgendamento, setMostrarAgendamento] = useState(false);
+  const [paciente, setPaciente] = useState(''); 
+  const [medicoId, setMedicoId] = useState(''); 
+  const [dataHora, setDataHora] = useState(''); 
+  const [consultas, setConsultas] = useState([]); 
+  const [loadingConsultas, setLoadingConsultas] = useState(true); 
+
 
   useEffect(() => {
-    fetch('http://localhost:3001/medicos')
-      .then(res => res.json())
-      .then(data => {
-        setMedicos(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error(err);
-        setLoading(false);
-      });
-  }, []);
+  fetch('http://localhost:3001/medicos')
+    .then(res => res.json())
+    .then(data => {
+      setMedicos(data);
+      setLoading(false);
+    })
+    .catch(err => {
+      console.error(err);
+      setLoading(false);
+    });
+
+  fetch('http://localhost:3001/consultas')
+    .then(res => res.json())
+    .then(data => {
+      setConsultas(data);
+      setLoadingConsultas(false);
+    })
+    .catch(err => {
+      console.error(err);
+      setLoadingConsultas(false);
+    });
+}, []);
 
   async function handleSubmit(e: React.FormEvent) {
   e.preventDefault();
@@ -44,6 +61,25 @@ export default function Home() {
       especialidade,
     }),
   });
+
+  async function handleAgendamentoSubmit(e: React.FormEvent) { 
+  e.preventDefault();
+
+  if (!paciente || !medicoId || !dataHora) return alert('Preencha todos os campos!');
+
+  const response = await fetch('http://localhost:3001/consultas', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ paciente, medicoId: Number(medicoId), dataHora }),
+  });
+
+  const novaConsulta = await response.json();
+  setPaciente('');
+  setMedicoId('');
+  setDataHora('');
+  setMostrarAgendamento(false);
+}
+
 
   const medicoCriado = await response.json();
 
@@ -103,9 +139,15 @@ export default function Home() {
         <form style={{ marginTop: 20 }}>
           <h3>Novo Agendamento</h3>
 
-          <input placeholder="Paciente" />
+          <input placeholder="Paciente" 
+          value={paciente} 
+          onChange={e => setPaciente(e.target.value)}
+          />
 
-          <select>
+          <select
+          value={medicoId} 
+          onChange={e => setMedicoId(e.target.value)}
+          >
             <option value="">Selecione um médico</option>
             {medicos.map(medico => (
               <option key={medico.id} value={medico.id}>
@@ -114,7 +156,10 @@ export default function Home() {
             ))}
           </select>
 
-          <input type="datetime-local" />
+          <input type="datetime-local" 
+          value={dataHora} 
+          onChange={e => setDataHora(e.target.value)}
+          />
 
           <button type="submit">Agendar</button>
         </form>
