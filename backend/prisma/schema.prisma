@@ -16,8 +16,10 @@ datasource db {
 model Medico {
   id             Int        @id @default(autoincrement())
   nome           String
-  crm            String
+  crm            String     @unique
   especialidade  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   consultas      Consulta[]
 }
 
@@ -26,5 +28,7 @@ model Consulta {
   medicoId  Int
   paciente  String
   dataHora  DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   medico    Medico   @relation(fields: [medicoId], references: [id])
 }
