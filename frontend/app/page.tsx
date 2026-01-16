@@ -15,7 +15,7 @@ export default function Home() {
   const [nome, setNome] = useState('');
   const [crm, setCrm] = useState('');
   const [especialidade, setEspecialidade] = useState('');
-
+  const [mostrarAgendamento, setMostrarAgendamento] = useState(false);
 
   useEffect(() => {
     fetch('http://localhost:3001/medicos')
@@ -54,7 +54,6 @@ export default function Home() {
   setEspecialidade('');
 }
 
-
   return (
     <main style={{ padding: 20 }}>
       <h1>MediAgenda</h1>
@@ -81,6 +80,9 @@ export default function Home() {
       <button type="submit">Cadastrar médico</button>
     </form>
 
+    <button onClick={() => setMostrarAgendamento(true)}>
+      Novo Agendamento
+    </button>
 
       <h2>Médicos</h2>
 
@@ -97,6 +99,27 @@ export default function Home() {
           </li>
         ))}
       </ul>
+      {mostrarAgendamento && (
+        <form style={{ marginTop: 20 }}>
+          <h3>Novo Agendamento</h3>
+
+          <input placeholder="Paciente" />
+
+          <select>
+            <option value="">Selecione um médico</option>
+            {medicos.map(medico => (
+              <option key={medico.id} value={medico.id}>
+                {medico.nome} — {medico.especialidade}
+              </option>
+            ))}
+          </select>
+
+          <input type="datetime-local" />
+
+          <button type="submit">Agendar</button>
+        </form>
+      )}
+
     </main>
   );
 }
