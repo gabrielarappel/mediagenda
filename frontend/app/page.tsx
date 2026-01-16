@@ -62,7 +62,14 @@ export default function Home() {
     }),
   });
 
-  async function handleAgendamentoSubmit(e: React.FormEvent) { 
+  const medicoCriado = await response.json();
+  setMedicos(prev => [...prev, medicoCriado]);
+  setNome('');
+  setCrm('');
+  setEspecialidade('');
+}
+
+async function handleAgendamentoSubmit(e: React.FormEvent) { 
   e.preventDefault();
 
   if (!paciente || !medicoId || !dataHora) return alert('Preencha todos os campos!');
@@ -78,16 +85,6 @@ export default function Home() {
   setMedicoId('');
   setDataHora('');
   setMostrarAgendamento(false);
-}
-
-
-  const medicoCriado = await response.json();
-
-  setMedicos(prev => [...prev, medicoCriado]);
-
-  setNome('');
-  setCrm('');
-  setEspecialidade('');
 }
 
   return (
@@ -136,17 +133,18 @@ export default function Home() {
         ))}
       </ul>
       {mostrarAgendamento && (
-        <form style={{ marginTop: 20 }}>
+        <form onSubmit={handleAgendamentoSubmit} style={{ marginTop: 20 }}>
           <h3>Novo Agendamento</h3>
 
-          <input placeholder="Paciente" 
-          value={paciente} 
-          onChange={e => setPaciente(e.target.value)}
+          <input
+            placeholder="Paciente"
+            value={paciente}
+            onChange={e => setPaciente(e.target.value)}
           />
 
           <select
-          value={medicoId} 
-          onChange={e => setMedicoId(e.target.value)}
+            value={medicoId}
+            onChange={e => setMedicoId(e.target.value)}
           >
             <option value="">Selecione um médico</option>
             {medicos.map(medico => (
@@ -156,9 +154,10 @@ export default function Home() {
             ))}
           </select>
 
-          <input type="datetime-local" 
-          value={dataHora} 
-          onChange={e => setDataHora(e.target.value)}
+          <input
+            type="datetime-local"
+            value={dataHora}
+            onChange={e => setDataHora(e.target.value)}
           />
 
           <button type="submit">Agendar</button>
